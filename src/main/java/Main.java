@@ -63,7 +63,7 @@ public class Main {
     }
 
     public static List<Employee> parseXML(String fileName) {
-        List<Employee> employees = null;
+        List<Employee> employees = new ArrayList<>();
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
@@ -78,22 +78,34 @@ public class Main {
 
     public static void readXML(Node node, List<Employee> list) {
         NodeList nodeList = node.getChildNodes();
+        List<String> strings = null;
         for (int i = 0; i < nodeList.getLength(); i++) {
         Node nodeTemp = nodeList.item(i);
         if (Node.ELEMENT_NODE == nodeTemp.getNodeType()){
-            System.out.println("Текущий узел: " + nodeTemp.getNodeName());
             Element element = (Element) nodeTemp;
-            NamedNodeMap map = element.getAttributes();
-            List<String> strings = null;
-            for (int j = 0; j < map.getLength(); j++) {
-                String attrName = map.item(j).getNodeName();
-                String attrValue = map.item(j).getNodeValue();
-                 strings.add(attrValue);
-                System.out.println("Атрибут " + attrName+ " значение "+ attrValue);
+            String name = element.getNodeName();
+            String value = element.getTextContent();
+            Employee employee = new Employee();
+            switch (name){
+                case "id":
+                    employee.id = Long.parseLong(value);
+                    break;
+                case "firstName":
+                    employee.firstName = value;
+                    break;
+                case "lastName":
+                    employee.lastName = value;
+                    break;
+                case "country":
+                  employee.country = value;
+                  break;
+                case "age":
+                    employee.age= Integer.parseInt(value);
+                    break;
+                default:
+                    break;
             }
-//            if (nodeTemp.getNodeName().equals("employee")){
-//                list.add(new Employee(Long.parseLong(strings.get(1)), strings.get(2), strings.get(3), strings.get(4),Integer.parseInt(strings.get(5))));
-//            }
+            list.add(employee);
             readXML(nodeTemp, list);
         }
         }
